@@ -1,0 +1,839 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Тест: темперамент ученика</title>
+
+  <!-- Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bgA:#ffe7ef;
+      --bgB:#fff1dc;
+      --bgC:#dbfff3;
+      --card: rgba(255,255,255,.80);
+      --cardSolid: #ffffff;
+      --text:#2f222a;
+      --muted:#6a5661;
+
+      --pink:#ff74ad;
+      --orange:#ff9c5a;
+      --mint:#39c9a7;
+
+      --shadow: 0 18px 42px rgba(35,10,25,.10);
+      --shadow2: 0 10px 24px rgba(35,10,25,.08);
+      --stroke: rgba(255,255,255,.55);
+
+      --radius: 26px;
+      --radius2: 18px;
+    }
+
+    *{ box-sizing:border-box; }
+
+    html, body { height: 100%; }
+
+    body{
+      margin:0;
+      font-family:"Poppins", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1100px 700px at 15% 10%, rgba(255,116,173,.28), transparent 55%),
+        radial-gradient(1000px 650px at 80% 20%, rgba(255,156,90,.22), transparent 55%),
+        radial-gradient(900px 600px at 55% 95%, rgba(57,201,167,.18), transparent 55%),
+        linear-gradient(120deg, var(--bgA) 0%, var(--bgB) 40%, var(--bgC) 100%);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+    }
+
+    /* Layout */
+    .wrap{
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 22px 14px 80px;
+    }
+
+    /* Center start screen */
+    .centerStage{
+      min-height: calc(100vh - 110px);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    /* Cards */
+    .card{
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--stroke);
+      backdrop-filter: blur(12px);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 26px;
+      animation: floatIn .55s cubic-bezier(.2,.9,.2,1) both;
+    }
+
+    @keyframes floatIn{
+      from{ opacity:0; transform: translateY(16px) scale(.985); }
+      to{ opacity:1; transform: translateY(0) scale(1); }
+    }
+
+    h1{
+      margin:0;
+      font-size: clamp(22px, 2.5vw, 30px);
+      line-height: 1.12;
+      letter-spacing: .2px;
+      font-weight: 600; /* тоньше чем было */
+    }
+
+    h2{
+      margin:0 0 10px;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: .2px;
+    }
+
+    .subtitle{
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: clamp(14px, 1.6vw, 16px);
+      line-height: 1.45;
+      font-weight: 400;
+      max-width: 740px;
+    }
+
+    .bullets{
+      margin: 14px 0 0;
+      padding-left: 18px;
+      font-size: clamp(14px, 1.6vw, 16px);
+      line-height: 1.5;
+      font-weight: 400;
+    }
+    .bullets li{ margin: 6px 0; }
+
+    /* Buttons */
+    .btn{
+      border:0;
+      cursor:pointer;
+      padding: 12px 18px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 14px;
+      box-shadow: var(--shadow2);
+      transition: transform .18s cubic-bezier(.2,.9,.2,1), filter .18s ease;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      user-select:none;
+      text-decoration:none;
+      line-height: 1;
+      will-change: transform;
+    }
+    .btn:hover{ transform: translateY(-2px); filter: brightness(1.02); }
+    .btn:active{ transform: translateY(0) scale(.99); }
+
+    .btn-primary{
+      background: linear-gradient(135deg, var(--pink), var(--orange));
+      color:#fff;
+    }
+    .btn-ghost{
+      background: rgba(255,255,255,.74);
+      color: var(--text);
+      border: 1px solid rgba(0,0,0,.04);
+    }
+
+    .startActions{
+      margin-top: 18px;
+      display:flex;
+      gap: 10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    /* Quiz / Result */
+    #quizCard, #resultCard { display:none; margin-top: 16px; }
+
+    .muted{
+      color: var(--muted);
+      font-size: 13px;
+      margin: 0 0 12px;
+      line-height: 1.45;
+      font-weight: 400;
+    }
+
+    /* Progress */
+    .progress{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      margin: 8px 0 12px;
+    }
+    .bar{
+      height: 11px;
+      flex: 1;
+      border-radius: 999px;
+      background: rgba(255,255,255,.65);
+      overflow:hidden;
+      border: 1px solid rgba(0,0,0,.04);
+    }
+    .fill{
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, var(--mint), var(--pink), var(--orange));
+      border-radius: 999px;
+      transition: width .28s cubic-bezier(.2,.9,.2,1);
+    }
+    .pLabel{
+      font-size: 12px;
+      color: var(--muted);
+      min-width: 90px;
+      text-align:right;
+      font-weight: 600;
+    }
+
+    /* Questions */
+    .question{
+      padding: 16px;
+      border-radius: var(--radius2);
+      background: rgba(255,255,255,.88);
+      border: 1px solid rgba(0,0,0,.05);
+      box-shadow: 0 10px 24px rgba(35,10,25,.06);
+      margin-top: 12px;
+      animation: fadeUp .35s ease both;
+    }
+    @keyframes fadeUp{
+      from{ opacity:0; transform: translateY(10px); }
+      to{ opacity:1; transform: translateY(0); }
+    }
+
+    .qTitle{
+      margin:0 0 12px;
+      font-weight: 600;  /* тоньше */
+      font-size: 15px;   /* крупнее */
+      line-height: 1.35;
+    }
+
+    .options{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    @media (max-width: 640px){
+      .options{ grid-template-columns: 1fr; }
+      .card{ padding: 18px; }
+      .centerStage{ min-height: calc(100vh - 90px); }
+    }
+
+    .opt{
+      border-radius: 18px;
+      border: 1px solid rgba(0,0,0,.06);
+      background: rgba(255,255,255,.78);
+      padding: 12px 12px;
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      cursor:pointer;
+      transition: transform .18s cubic-bezier(.2,.9,.2,1), border-color .18s ease, background .18s ease, box-shadow .18s ease;
+      user-select:none;
+      will-change: transform;
+    }
+    .opt:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 10px 22px rgba(35,10,25,.07);
+    }
+    .opt input{ display:none; }
+
+    .pill{
+      font-weight: 600;
+      font-size: 12px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      color: white;
+      flex: 0 0 auto;
+      margin-top: 1px;
+      box-shadow: 0 10px 18px rgba(0,0,0,.08);
+    }
+    .pill.A{ background: linear-gradient(135deg, var(--orange), #ff6d9e); }
+    .pill.B{ background: linear-gradient(135deg, var(--pink), #ffb25e); }
+    .pill.C{ background: linear-gradient(135deg, var(--mint), #7be8d1); color:#0e3a30; }
+    .pill.D{ background: linear-gradient(135deg, #7a6cff, var(--pink)); }
+
+    .optText{
+      font-size: 13.5px;
+      line-height: 1.3;
+      color: var(--text);
+      font-weight: 400; /* тоньше */
+    }
+
+    .opt.selected{
+      border-color: rgba(255,116,173,.45);
+      background: rgba(255,255,255,.92);
+      transform: translateY(-2px);
+    }
+
+    .footerRow{
+      margin-top: 16px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+    }
+
+    .tiny{
+      color: var(--muted);
+      font-size: 12.5px;
+      font-weight: 400; /* тоньше */
+    }
+    .dangerText{ color:#7a1d3f; font-weight:500; }
+
+    /* Result */
+    .resultTitle{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin:0 0 10px;
+      flex-wrap:wrap;
+    }
+    .badge{
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 12px;
+      color:white;
+      box-shadow: var(--shadow2);
+      background: linear-gradient(135deg, var(--mint), var(--pink), var(--orange));
+    }
+    .resultName{
+      margin:0;
+      font-size: 19px;
+      font-weight: 600;
+    }
+    .block{
+      margin-top: 12px;
+      background: rgba(255,255,255,.88);
+      border: 1px solid rgba(0,0,0,.05);
+      border-radius: var(--radius2);
+      padding: 14px 16px;
+      animation: fadeUp .35s ease both;
+    }
+    .block h3{
+      margin:0 0 8px;
+      font-size: 13.5px;
+      letter-spacing:.2px;
+      font-weight: 600;
+    }
+    .block ul{
+      margin:0;
+      padding-left: 18px;
+      font-size: 13.5px;
+      line-height: 1.45;
+      font-weight: 400;
+    }
+    .block p{
+      margin:0;
+      font-size: 13.5px;
+      line-height: 1.5;
+      font-weight: 400;
+    }
+
+    /* Tip tags for mixed type clarity */
+    .tipLine{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      margin: 8px 0;
+    }
+    .tag{
+      flex: 0 0 auto;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,.06);
+      background: rgba(255,255,255,.75);
+      white-space: nowrap;
+    }
+    .tag.h{ border-color: rgba(255,156,90,.35); background: rgba(255,156,90,.12); }
+    .tag.s{ border-color: rgba(255,116,173,.35); background: rgba(255,116,173,.12); }
+    .tag.g{ border-color: rgba(57,201,167,.35); background: rgba(57,201,167,.12); color:#0e3a30; }
+
+    .tipText{
+      font-size: 13.5px;
+      line-height: 1.45;
+      font-weight: 400;
+    }
+
+    /* Smooth reveal */
+    .softReveal{ animation: floatIn .55s cubic-bezier(.2,.9,.2,1) both; }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <!-- START SCREEN (centered) -->
+    <div class="centerStage" id="startStage">
+      <div class="card softReveal" id="startCard">
+        <h1>Привет! Давай определим твой темперамент ✨</h1>
+        <p class="subtitle">
+          Ответь на 20 коротких вопросов — в конце ты получишь результат и понятные советы по учёбе.
+        </p>
+        <ul class="bullets">
+          <li>какой у тебя тип темперамента</li>
+          <li>сильные стороны</li>
+          <li>что чаще мешает</li>
+          <li>советы по учёбе</li>
+        </ul>
+
+        <div class="startActions">
+          <button class="btn btn-primary" id="startBtn" type="button">Начать тест</button>
+          <a class="btn btn-ghost" href="https://t.me/lera_easy_math" target="_blank" rel="noopener">
+            Подписаться на канал
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUIZ -->
+    <div class="card softReveal" id="quizCard">
+      <h2>Вопросы</h2>
+      <p class="muted">Выбирай вариант, который больше похож на тебя.</p>
+
+      <div class="progress">
+        <div class="bar"><div class="fill" id="progressFill"></div></div>
+        <div class="pLabel" id="progressLabel">0 / 20</div>
+      </div>
+
+      <div id="questionsRoot"></div>
+
+      <div class="footerRow">
+        <div class="tiny" id="hintText">Ответь на все вопросы — и покажу результат.</div>
+        <button class="btn btn-primary" id="finishBtn" type="button">Показать результат</button>
+      </div>
+    </div>
+
+    <!-- RESULT -->
+    <div class="card softReveal" id="resultCard">
+      <div class="resultTitle">
+        <div class="badge">РЕЗУЛЬТАТ</div>
+        <h2 class="resultName" id="resultName">—</h2>
+      </div>
+
+      <div class="block">
+        <h3>Про тебя</h3>
+        <p id="resultAbout">—</p>
+      </div>
+
+      <div class="block">
+        <h3>Сильные стороны</h3>
+        <ul id="resultPros"></ul>
+      </div>
+
+      <div class="block">
+        <h3>Что чаще мешает</h3>
+        <ul id="resultCons"></ul>
+      </div>
+
+      <div class="block">
+        <h3>Советы по учёбе</h3>
+        <div id="resultTips"></div>
+      </div>
+
+      <div class="footerRow" style="margin-top:14px;">
+        <a class="btn btn-ghost" href="#quizCard" id="backToQuiz">К вопросам</a>
+        <a class="btn btn-primary" href="https://t.me/lera_easy_math" target="_blank" rel="noopener">
+          Подписаться ✨
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const QUESTIONS = [
+      { t: "Когда дают новое задание, я обычно…", o: {
+        A: "сразу начинаю делать, даже если не всё понял(а)",
+        B: "сначала спрашиваю/обсуждаю, потом делаю",
+        C: "спокойно читаю, разбираюсь по шагам",
+        D: "переживаю, что не получится, и делаю осторожно"
+      }},
+      { t: "Если задача сложная, я…", o: {
+        A: "злюсь и хочу решить “любой ценой”",
+        B: "могу отвлечься, но потом вернусь",
+        C: "терпеливо пробую разные шаги",
+        D: "могу расстроиться и зависнуть"
+      }},
+      { t: "На уроке мне комфортнее, когда…", o: {
+        A: "быстро, чётко, много задач",
+        B: "интересно, с примерами и общением",
+        C: "спокойно, без спешки, с понятным планом",
+        D: "доброжелательно, без давления и критики"
+      }},
+      { t: "Домашку я делаю…", o: {
+        A: "резко: сел(а) — сделал(а) — свободен(а)",
+        B: "по настроению, могу перескочить между заданиями",
+        C: "стабильно, по привычке, ровно",
+        D: "долго собираюсь, могу откладывать из-за тревоги"
+      }},
+      { t: "Если меня торопят, я…", o: {
+        A: "начинаю нервничать и могу вспылить",
+        B: "могу пошутить/отвлечься",
+        C: "просто продолжаю в своём темпе",
+        D: "теряюсь и делаю хуже"
+      }},
+      { t: "Когда у меня не получается, я чаще…", o: {
+        A: "злюсь",
+        B: "переключаюсь на другое",
+        C: "пробую ещё раз спокойно",
+        D: "переживаю и думаю “я туплю”"
+      }},
+      { t: "Я быстрее учусь, когда…", o: {
+        A: "есть челлендж и соревнование",
+        B: "есть игра, интерактив, разнообразие",
+        C: "есть чёткий алгоритм и повторение",
+        D: "есть поддержка и “безопасная” атмосфера"
+      }},
+      { t: "На контрольной я обычно…", o: {
+        A: "быстро пишу, потом исправляю на ходу",
+        B: "могу спешить и пропускать детали",
+        C: "делаю аккуратно, проверяю",
+        D: "волнуюсь и могу забыть даже то, что знаю"
+      }},
+      { t: "Если учитель делает замечание, я…", o: {
+        A: "спорю или внутренне “киплю”",
+        B: "могу отшутиться",
+        C: "принимаю и исправляю",
+        D: "сильно переживаю и могу закрыться"
+      }},
+      { t: "Мой идеальный темп занятий…", o: {
+        A: "быстрый, динамичный",
+        B: "средний, чтобы было интересно",
+        C: "спокойный и ровный",
+        D: "медленный, чтобы точно понять"
+      }},
+      { t: "Когда я устаю, я…", o: {
+        A: "становлюсь раздражительным(ой)",
+        B: "начинаю отвлекаться",
+        C: "просто работаю медленнее",
+        D: "могу “потухнуть” и потерять уверенность"
+      }},
+      { t: "Если в задаче много текста…", o: {
+        A: "хочу сразу к сути, пропускаю лишнее",
+        B: "могу запутаться, если скучно",
+        C: "спокойно читаю и выделяю данные",
+        D: "напрягаюсь и боюсь ошибиться"
+      }},
+      { t: "В группе/паре мне обычно…", o: {
+        A: "нравится быть лидером",
+        B: "нравится общение и движ",
+        C: "нормально, если все спокойные",
+        D: "трудно, если меня перебивают/давят"
+      }},
+      { t: "Я чаще ошибаюсь из-за…", o: {
+        A: "спешки и желания быстрее",
+        B: "невнимательности/переключений",
+        C: "редких ошибок, но бывает “зависание”",
+        D: "тревоги и неуверенности"
+      }},
+      { t: "Если задача однотипная (много похожих), я…", o: {
+        A: "делаю быстро и могу “психануть”",
+        B: "быстро устаю и хочу разнообразия",
+        C: "мне норм, даже нравится",
+        D: "мне страшно ошибиться, делаю медленно"
+      }},
+      { t: "Мне легче начать работу, если…", o: {
+        A: "есть цель “сделать за 10 минут”",
+        B: "есть интересный формат (игра/квест)",
+        C: "есть план “шаг 1–2–3”",
+        D: "меня поддержат и скажут “спокойно, получится”"
+      }},
+      { t: "Когда всё идёт хорошо, я…", o: {
+        A: "хочу ещё сложнее",
+        B: "радуюсь и заряжаю всех",
+        C: "спокойно продолжаю",
+        D: "удивляюсь и боюсь “сейчас сорвусь”"
+      }},
+      { t: "Когда меня хвалят, я…", o: {
+        A: "хочу сразу следующий уровень",
+        B: "становлюсь ещё активнее",
+        C: "просто рад(а) и продолжаю",
+        D: "мне становится спокойнее и увереннее"
+      }},
+      { t: "Если нужно долго думать, я…", o: {
+        A: "раздражаюсь, хочу быстрее",
+        B: "начинаю терять внимание",
+        C: "нормально, люблю вдумчиво",
+        D: "могу начать переживать и сомневаться"
+      }},
+      { t: "В целом я про себя думаю, что я…", o: {
+        A: "резкий(ая), быстрый(ая), энергичный(ая)",
+        B: "общительный(ая), подвижный(ая), лёгкий(ая)",
+        C: "спокойный(ая), устойчивый(ая), последовательный(ая)",
+        D: "чувствительный(ая), осторожный(ая), впечатлительный(ая)"
+      }},
+    ];
+
+    // Для смешанных типов мы будем помечать советы: [Холерик]/[Сангвиник] + общие
+    const RESULTS = {
+      A: {
+        label: "Холерик",
+        about: "Ты быстрый(ая), энергичный(ая) и заряженный(ая). Если задача цепляет — ты врываешься и хочешь результат прямо сейчас.",
+        pros: ["быстро схватываешь суть","не боишься сложных задач","хорошо работаешь в интенсиве","умеешь “дожимать” до результата"],
+        cons: ["спешка → глупые ошибки","злишься, если не выходит сразу","сложно долго делать однотипное","можешь перегореть"],
+        tips: [
+          { tag:"h", text:"ставь таймер: «5 задач за 10 минут»" },
+          { tag:"h", text:"прочитай условие до конца (да-да 😄)" },
+          { tag:"h", text:"оставляй 2–3 минуты на проверку" },
+          { tag:"h", text:"если закипаешь — пауза 30 секунд и дальше" }
+        ]
+      },
+      B: {
+        label: "Сангвиник",
+        about: "Ты живой(ая), общительный(ая), легко включаешься. Учёба идёт лучше, когда интересно и есть движ.",
+        pros: ["быстро входишь в новый материал","не боишься спрашивать","легко переключаешься","круто учишься через диалог"],
+        cons: ["отвлекаешься","можешь не доводить до конца","пропускаешь детали","работа “по настроению”"],
+        tips: [
+          { tag:"s", text:"дели домашку на блоки по 10–15 минут" },
+          { tag:"s", text:"чередуй сложное и лёгкое" },
+          { tag:"s", text:"проговаривай решение вслух" },
+          { tag:"s", text:"делай мини-чеклист: «сделал → отметил»" }
+        ]
+      },
+      C: {
+        label: "Флегматик",
+        about: "Ты спокойный(ая), устойчивый(ая) и надёжный(ая). Ты не любишь суету, зато умеешь глубоко разбираться.",
+        pros: ["усидчивость и терпение","логика и системность","аккуратность","стабильный результат"],
+        cons: ["медленный старт","сложно под жёсткий тайминг","можешь зависать без плана","не сразу включаешься"],
+        tips: [
+          { tag:"g", text:"начинай с плана: «шаг 1–2–3»" },
+          { tag:"g", text:"разбивай задачи на маленькие шаги" },
+          { tag:"g", text:"скорость тренируй отдельно (по 5 минут в день)" },
+          { tag:"g", text:"делай мини-конспект “шаблонов” решений" }
+        ]
+      },
+      D: {
+        label: "Меланхолик",
+        about: "Ты чувствительный(ая), внимательный(ая) и глубоко переживаешь. Ты можешь знать материал, но из-за волнения результат проседает.",
+        pros: ["внимательность","аккуратность","глубокое понимание","ответственность"],
+        cons: ["тревога и страх ошибок","ступор на проверках/контрольных","заниженная уверенность","трудно начинать без поддержки"],
+        tips: [
+          { tag:"g", text:"начинай с простого/знакомого — это даёт уверенность" },
+          { tag:"g", text:"пиши черновик: мозгу спокойнее" },
+          { tag:"g", text:"напоминалка: «ошибка — это шаг к решению»" },
+          { tag:"g", text:"тренируйся спокойно, постепенно ускоряясь" }
+        ]
+      }
+    };
+
+    // UI refs
+    const startStage = document.getElementById("startStage");
+    const startBtn = document.getElementById("startBtn");
+    const quizCard = document.getElementById("quizCard");
+    const resultCard = document.getElementById("resultCard");
+
+    const questionsRoot = document.getElementById("questionsRoot");
+    const progressFill = document.getElementById("progressFill");
+    const progressLabel = document.getElementById("progressLabel");
+    const hintText = document.getElementById("hintText");
+    const finishBtn = document.getElementById("finishBtn");
+
+    const resultName = document.getElementById("resultName");
+    const resultAbout = document.getElementById("resultAbout");
+    const resultPros = document.getElementById("resultPros");
+    const resultCons = document.getElementById("resultCons");
+    const resultTips = document.getElementById("resultTips");
+
+    startBtn.addEventListener("click", () => {
+      startStage.style.display = "none";
+      quizCard.style.display = "block";
+      quizCard.scrollIntoView({behavior:"smooth", block:"start"});
+      // легкий “вход” при открытии
+      quizCard.animate(
+        [{opacity:0, transform:"translateY(10px)"},{opacity:1, transform:"translateY(0)"}],
+        {duration:260, easing:"cubic-bezier(.2,.9,.2,1)"}
+      );
+    });
+
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    function render(){
+      questionsRoot.innerHTML = "";
+      QUESTIONS.forEach((q, idx) => {
+        const el = document.createElement("div");
+        el.className = "question";
+        el.innerHTML = `
+          <p class="qTitle">${idx+1}. ${escapeHtml(q.t)}</p>
+          <div class="options" data-q="${idx}">
+            ${["A","B","C","D"].map(k => `
+              <label class="opt" data-opt="${k}">
+                <input type="radio" name="q_${idx}" value="${k}">
+                <span class="pill ${k}">${k}</span>
+                <span class="optText">${escapeHtml(q.o[k])}</span>
+              </label>
+            `).join("")}
+          </div>
+        `;
+        questionsRoot.appendChild(el);
+      });
+
+      questionsRoot.addEventListener("change", (e) => {
+        const input = e.target;
+        if (!input || input.type !== "radio") return;
+        const qIndex = input.name.split("_")[1];
+        const group = document.querySelector(`.options[data-q="${qIndex}"]`);
+        [...group.querySelectorAll(".opt")].forEach(o => o.classList.remove("selected"));
+        group.querySelector(`.opt[data-opt="${input.value}"]`)?.classList.add("selected");
+        updateProgress();
+      });
+
+      questionsRoot.addEventListener("click", (e) => {
+        const opt = e.target.closest(".opt");
+        if (!opt) return;
+        opt.querySelector("input")?.click();
+      });
+
+      updateProgress();
+    }
+
+    function getAnswers(){
+      const answers = [];
+      for (let i=0;i<QUESTIONS.length;i++){
+        const checked = document.querySelector(`input[name="q_${i}"]:checked`);
+        answers.push(checked ? checked.value : null);
+      }
+      return answers;
+    }
+
+    function updateProgress(){
+      const answers = getAnswers();
+      const done = answers.filter(Boolean).length;
+      progressLabel.textContent = `${done} / ${QUESTIONS.length}`;
+      progressFill.style.width = `${Math.round(done / QUESTIONS.length * 100)}%`;
+
+      if (done === QUESTIONS.length){
+        hintText.textContent = "Готово! Жми “Показать результат”.";
+        hintText.classList.remove("dangerText");
+      } else {
+        hintText.textContent = `Осталось ответить ещё на ${QUESTIONS.length - done}.`;
+        hintText.classList.remove("dangerText");
+      }
+    }
+
+    function calcResult(answers){
+      const counts = {A:0,B:0,C:0,D:0};
+      answers.forEach(a => { if(a) counts[a]++; });
+
+      const ranked = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+      const [topKey, topVal] = ranked[0];
+      const [secondKey, secondVal] = ranked[1];
+      const diff = topVal - secondVal;
+
+      return (diff <= 1)
+        ? { mixed:true, primary:topKey, secondary:secondKey }
+        : { mixed:false, primary:topKey, secondary:null };
+    }
+
+    function renderList(ul, items){
+      ul.innerHTML = "";
+      items.forEach(x => {
+        const li = document.createElement("li");
+        li.textContent = x;
+        ul.appendChild(li);
+      });
+    }
+
+    function renderTips(container, tips){
+      container.innerHTML = "";
+      tips.forEach(t => {
+        const row = document.createElement("div");
+        row.className = "tipLine";
+        const tag = document.createElement("span");
+        tag.className = "tag " + (t.tag || "g");
+        tag.textContent =
+          t.tag === "h" ? "Холерик" :
+          t.tag === "s" ? "Сангвиник" :
+          "Общее";
+        const text = document.createElement("div");
+        text.className = "tipText";
+        text.textContent = t.text;
+        row.appendChild(tag);
+        row.appendChild(text);
+        container.appendChild(row);
+      });
+    }
+
+    function showResult(){
+      const answers = getAnswers();
+      const done = answers.filter(Boolean).length;
+
+      if (done !== QUESTIONS.length){
+        hintText.textContent = "Нужно ответить на все вопросы 🙂";
+        hintText.classList.add("dangerText");
+        return;
+      }
+
+      const res = calcResult(answers);
+
+      let title = "";
+      let about = "";
+      let pros = [];
+      let cons = [];
+      let tips = [];
+
+      if (!res.mixed){
+        const data = RESULTS[res.primary];
+        title = data.label;
+        about = data.about;
+        pros = data.pros;
+        cons = data.cons;
+        tips = data.tips;
+      } else {
+        const a = RESULTS[res.primary];
+        const b = RESULTS[res.secondary];
+
+        title = `Смешанный тип: ${a.label} + ${b.label}`;
+        about = `У тебя почти поровну два типа — это нормально. Чтобы было понятно, какие советы “откуда”, ниже они помечены тегами.`;
+
+        pros = [...a.pros.slice(0,2), ...b.pros.slice(0,2)];
+        cons = [...a.cons.slice(0,2), ...b.cons.slice(0,2)];
+
+        tips = [
+          ...a.tips.slice(0,2),
+          ...b.tips.slice(0,2),
+          { tag:"g", text:"попробуй советы обоих типов 2–3 дня и оставь те, после которых меньше ошибок и больше сделанных задач" }
+        ];
+      }
+
+      resultName.textContent = title;
+      resultAbout.textContent = about;
+      renderList(resultPros, pros);
+      renderList(resultCons, cons);
+      renderTips(resultTips, tips);
+
+      resultCard.style.display = "block";
+      resultCard.scrollIntoView({behavior:"smooth", block:"start"});
+      resultCard.animate(
+        [{opacity:0, transform:"translateY(10px)"},{opacity:1, transform:"translateY(0)"}],
+        {duration:280, easing:"cubic-bezier(.2,.9,.2,1)"}
+      );
+    }
+
+    finishBtn.addEventListener("click", showResult);
+
+    render();
+  </script>
+</body>
+</html>
